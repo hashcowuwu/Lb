@@ -1,32 +1,39 @@
 import figlet from "figlet";
 import express from "express";
+import bodyParser from "body-parser";
+import db from "./database";
 
-const server = Bun.serve({
-  development: true, //开发者模式
-  port: 3000,
-  static: {
-    //静态路由
-    "/bun": new Response(Bun.version),
-    "/api/health-check": new Response("All good!"),
-  },
-  fetch(req, server) {
-    const url = new URL(req.url);
-    if (url.pathname === "/") {
-      const body = figlet.textSync("Bun!");
-      console.log("server:");
-      console.log(server);
-      return new Response(body);
-    }
-    if (url.pathname === "/ip") {
-      const ip = server.requestIP(req);
-      console.log(ip);
-      return new Response(`Your IP is ${ip?.address}`);
-    }
-    return new Response("404!");
-  },
+const app = express();
+const port = 3000;
+
+app.use(bodyParser.json());
+
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  const query = db.prepare(
+    "SELECT * FROM users WHERE username = ? AND password = ?",
+  );
+
+  const user = query.get(username, password);
+
+  if (user) {
+    res.json({
+      success: true,
+      message: "登陆成功",
+      user: {
+        id: user.id,
+        username: user.username,
+      },
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      message: "用户名或密码错误",
+    });
+  }
 });
 
-// Bun v1.1.27+ required
-
-console.log(`Listening on http://localhost:${server.port} ...`);
-console.log(Bun.version);
+app.listen(port, () => {
+  console.log(`服务器正在运行在 http://localhost:${port}`);
+});
