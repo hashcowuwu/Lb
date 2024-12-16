@@ -13,6 +13,7 @@ const server = Bun.serve({
     }
     if (url.pathname === "/ip") {
       const ip = server.requestIP(req);
+      console.log(ip);
       return new Response(`Your IP is ${ip?.address}`);
     }
     return new Response("404!");
