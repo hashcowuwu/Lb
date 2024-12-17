@@ -20,7 +20,7 @@ app.post("/login", (req, res) => {
   if (user) {
     res.json({
       success: true,
-      message: "登陆成功",
+      message: "success",
       user: {
         id: user.id,
         username: user.username,
@@ -29,11 +29,11 @@ app.post("/login", (req, res) => {
   } else {
     res.status(401).json({
       success: false,
-      message: "用户名或密码错误",
+      message: "fail",
     });
   }
 });
 
 app.listen(port, () => {
-  console.log(`服务器正在运行在 http://localhost:${port}`);
+  console.log(`Listen to  http://localhost:${port}`);
 });
