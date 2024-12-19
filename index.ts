@@ -9,6 +9,8 @@ const port = 3000;
 
 app.use(bodyParser.json());
 
+// 登陆接口
+
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
   const query = db.prepare("SELECT * FROM users WHERE username = ?");
@@ -49,6 +51,24 @@ app.post("/register", (req, res) => {
     res.status(400).json({
       success: true,
       message: " Username Already Exists",
+    });
+  }
+});
+
+app.get("/getUserById", (req, res) => {
+  const { id } = req.query;
+  const query = db.prepare("SELECT username from users where id = ?");
+  const user = query.get(id);
+  if (user) {
+    res.json({
+      success: true,
+      messgae: "query Successful",
+      userName: user.username,
+    });
+  } else {
+    res.json({
+      success: false,
+      message: "not found user",
     });
   }
 });
